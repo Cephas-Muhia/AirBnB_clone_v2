@@ -1,22 +1,31 @@
 #!/usr/bin/python3
-"""This is the user class"""
-from models.base_model import BaseModel, Base
+
+"""
+A module that defines the ORM class for User table
+"""
+from os import getenv
+from models.base_model import Base, BaseModel
 from sqlalchemy import Column, String
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 
 
 class User(BaseModel, Base):
-    """This is the class for user
-    Attributes:
-        email: email address
-        password: password for you login
-        first_name: first name
-        last_name: last name
+    """
+    Defines attributes for User table
     """
     __tablename__ = 'users'
-    email = Column(String(128), nullable=False)
-    password = Column(String(128), nullable=False)
-    first_name = Column(String(128))
-    last_name = Column(String(128))
-    places = relationship("Place", cascade="all, delete", backref="user")
-    reviews = relationship("Review", passive_deletes=True, backref="user")
+
+    if getenv('HBNB_TYPE_STORAGE') == 'db':
+        email = Column(String(128), nullable=False)
+        password = Column(String(128), nullable=False)
+        first_name = Column(String(128), nullable=True)
+        last_name = Column(String(128), nullable=True)
+        places = relationship(
+            'Place', backref='user', cascade='all, delete')
+        reviews = relationship(
+            'Review', backref='user', cascade='all, delete')
+    else:
+        email = ''
+        password = ''
+        first_name = ''
+        last_name = ''
